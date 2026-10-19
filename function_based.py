@@ -91,12 +91,7 @@ def create_report(lines):
     results = list(zip(lines, validated_data))
 
     total_files = len(lines)
-    compliant_records = []
-    for result in results:
-        issue = result[1]
-
-        if len(issue) == 0:
-            compliant_records.append(result)
+    compliant_records = list(filter(lambda result: len(result[1])==0, results))
 
     compliant_count = len(compliant_records)
     non_compliant_count = len(results)-len(compliant_records)
