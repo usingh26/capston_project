@@ -102,14 +102,10 @@ def create_report(lines):
     else:
         compliance_rate = 0.0
 
-    issues_by_file = {}
-
-    for result in results:
-        data = result[0]
-        issue = result[1]
-
-        filename = str(data.get("filename") or "")
-        issues_by_file[filename] = issue
+    issues_by_file = {
+        str(result[0].get("filename") or ""): result[1]
+        for result in results
+    }
 
     module_counts = {}
 
