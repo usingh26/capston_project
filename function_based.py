@@ -8,7 +8,10 @@ def read_file(file_path):
     if file_path.suffix.lower() == ".csv":
         with open(file_path, "r", newline="", encoding="utf-8") as file:
             reader = csv.DictReader(file)
-            return list(reader)
+            # return list(reader)
+
+            for row in reader:
+                yield row
 
     elif file_path.suffix.lower()==".json":
         with open(file_path, "r", encoding="utf-8") as file:
@@ -17,7 +20,9 @@ def read_file(file_path):
         if not isinstance(records, list):
             raise ValueError("Json file must have a list of records")
 
-        return records
+        # return records
+        for record in records:
+            yield record
 
     else:
         raise ValueError("Unsupported file type")
@@ -80,6 +85,7 @@ def validate_data(data):
 
 # creating report
 def create_report(lines):
+    lines = list(lines)
     validated_data = list(map(validate_data, lines))
 
     results = list(zip(lines, validated_data))
