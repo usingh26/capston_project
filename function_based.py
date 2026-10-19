@@ -125,14 +125,10 @@ def create_report(lines):
         if len(issue) == 0:
             module_counts[module_code]["compliant"] += 1
 
-    summary_by_module = {}
-
-    for module_code in module_counts:
-        total = module_counts[module_code]["total"]
-        compliant = module_counts[module_code]["compliant"]
-
-        rate = round(compliant / total * 100, 2)
-        summary_by_module[module_code] = rate
+    summary_by_module = {
+        module_code: round(counts["compliant"]/counts["total"]*100,2)
+        for module_code, counts in module_counts.items()
+    }
 
     report = {
         "total_files": total_files,
