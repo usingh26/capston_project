@@ -130,8 +130,6 @@ def create_report(lines):
 
     summary_by_module = {}
 
-    summary_by_module = {}
-
     for module_code in module_counts:
         total = module_counts[module_code]["total"]
         compliant = module_counts[module_code]["compliant"]
