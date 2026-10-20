@@ -27,6 +27,16 @@ def read_file(file_path):
     else:
         raise ValueError("Unsupported file type")
 
+# closure for status validation
+def make_satus_validator(allowed_statuses):
+    allowed_statuses = { status.lower() for status in allowed_statuses}
+
+    def is_valid_status(status):
+        return status.strip().lower() in allowed_statuses
+
+    return is_valid_status
+
+status_validator = make_satus_validator({"draft","review","final"})
 
 # validator function 
 def validate_data(data):
@@ -74,10 +84,10 @@ def validate_data(data):
             issues.append(issue_code)
 
 # vakidating status 
-    valid_status = {"draft", "review", "final"}
-    status = data.get("status", "").strip().lower()
 
-    if status not in valid_status:
+    status = data.get("status", "")
+
+    if not status_validator(status):
         issues.append("INVALID_STATUS")
 
     return issues
