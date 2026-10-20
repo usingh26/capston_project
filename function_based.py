@@ -2,6 +2,8 @@ import csv
 import json
 import re
 from pathlib import Path
+import time
+from functools import wraps
 
 # reading csv/json file 
 def read_file(file_path):
@@ -93,7 +95,28 @@ def validate_data(data):
     return issues
 
 
+# using decorator for logging and monitoring
+def log_and_time(function):
+    def wrapper(*args, **kwargs):
+        print(f"Starting {function.__name__}")
+
+        start_time = time.perf_counter()
+
+        try:
+            return function(*args, **kwargs)
+        finally:
+            end_time = time.perf_counter()
+            
+            elapsed_time = end_time - start_time
+
+            print(f"Finished {function.__name__}")
+            print(f"Execution time: {elapsed_time:.6f} seconds")
+
+    return wrapper
+
+
 # creating report
+@log_and_time
 def create_report(lines):
     lines = list(lines)
     validated_data = list(map(validate_data, lines))
