@@ -1,0 +1,30 @@
+{
+    "total_files": 5,
+    "compliant_count": 2,
+    "non_compliant_count": 3,
+    "compliance_rate": 40.0,
+    "issues_by_file": {
+        "python.pdf": [],
+        "sql.pdf": [],
+        "bad_notes.txt": [
+            "INVALID_FILENAME",
+            "INVALID_PAGE_COUNT",
+            "INVALID_HAS_TOC",
+            "INVALID_STATUS"
+        ],
+        "java.phdf": [
+            "INVALID_FILENAME",
+            "INVALID_STATUS"
+        ],
+        "python.pdfk": [
+            "INVALID_FILENAME",
+            "INVALID_HAS_TOC"
+        ]
+    },
+    "summary_by_module": {
+        "PY-101": 50.0,
+        "SQL-201": 100.0,
+        "WEB-301": 0.0,
+        "JAVA-401": 0.0
+    }
+}

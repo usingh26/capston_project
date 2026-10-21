@@ -1,0 +1,6 @@
+filename,module_code,page_count,file_size_kb,has_toc,has_images,author,status
+python.pdf,PY-101,25,350.5,true,true,Alice,final
+sql.pdf,SQL-201,30,420.0,true,false,Bob,review
+bad_notes.txt,WEB-301,0,100.0,yes,true,Charlie,published
+java.phdf,JAVA-401,40,500.0,false,true,David,finalj
+python.pdfk,PY-101,25,350.5,truie,true,Alice,final

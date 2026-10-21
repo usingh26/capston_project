@@ -1,0 +1,23 @@
+
+[
+  {
+    "filename": "python.pdf",
+    "module_code": "PY-101",
+    "page_count": 25,
+    "file_size_kb": 350.5,
+    "has_toc": "true",
+    "has_images": "true",
+    "author": "Alice",
+    "status": "final"
+  },
+  {
+    "filename": "sql.pdf",
+    "module_code": "SQL-201",
+    "page_count": 30,
+    "file_size_kb": 420.0,
+    "has_toc": "true",
+    "has_images": "false",
+    "author": "Bob",
+    "status": "review"
+  }
+]
