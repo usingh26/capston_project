@@ -177,28 +177,29 @@ def create_report(lines):
 
 
 # main
-current_folder = Path(__file__).resolve().parent
-
-root_folder = current_folder.parent
-
-input_path = root_folder/"sample_data"/"sample_manifest.csv"
-
-try:
-    lines = read_file(input_path)
-    report = create_report(lines)
-    op_folder = root_folder/"compliance_report"
-
-    op_folder.mkdir(parents=True, exist_ok=True)
-
-    op_path = op_folder/"compliance_report.json"
-
-    with open(op_path, "w", encoding="utf-8") as file:
-        json.dump(report, file, indent=4)
-
-    print(f"Report saved to: {op_path}")
-
-except (OSError, ValueError, csv.Error, json.JSONDecodeError) as error:
-    print(f"Error: {error}")
+if __name__=="__main__":
+    current_folder = Path(__file__).resolve().parent
+    
+    root_folder = current_folder.parent
+    
+    input_path = root_folder/"sample_data"/"sample_manifest.csv"
+    
+    try:
+        lines = read_file(input_path)
+        report = create_report(lines)
+        op_folder = root_folder/"compliance_report"
+    
+        op_folder.mkdir(parents=True, exist_ok=True)
+    
+        op_path = op_folder/"compliance_report.json"
+    
+        with open(op_path, "w", encoding="utf-8") as file:
+            json.dump(report, file, indent=4)
+    
+        print(f"Report saved to: {op_path}")
+    
+    except (OSError, ValueError, csv.Error, json.JSONDecodeError) as error:
+        print(f"Error: {error}")
 
 
 
