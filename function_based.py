@@ -3,6 +3,17 @@ import json
 import re
 from pathlib import Path
 import time
+import sys
+
+
+class MissingManifestError(Exception):
+    """Raised when the manifest file cannot be found."""
+    pass
+
+
+class InvalidRowError(Exception):
+    """Raised when a manifest row has an invalid structure."""
+    pass
 
 # reading csv/json file 
 def read_file(file_path):
@@ -196,12 +207,14 @@ if __name__=="__main__":
         with open(op_path, "w", encoding="utf-8") as file:
             json.dump(report, file, indent=4)
     
-        print(f"Report saved to: {op_path}")
     
-    except (OSError, ValueError, csv.Error, json.JSONDecodeError) as error:
-        print(f"Error: {error}")
+    except (MissingManifestError, InvalidRowError, OSError, ValueError, csv.Error, json.JSONDecodeError) as error:
+        print(f"Error: {error}", file=sys.stderr)
 
+    else:
+        print(f"Report saved to: {op_path}")
 
-
+    finally:
+        print("Auditor execution finished.", file=sys.stderr)
 
 
