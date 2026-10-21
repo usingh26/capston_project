@@ -5,6 +5,130 @@ import sys
 import re
 
 
+class Validator:
+    """Base class for all validators"""
+    validator_count = 0
+
+    def __init__(self, field_name):
+        self.field_name = field_name
+        Validator.validator_count += 1
+
+    def validate(self, data):
+        """validator must implement this method"""
+        raise NotImplementedError("Every validator must implement validate()")
+
+    def __str__(self):
+        return f"{self.__class__.__name__}"
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.field_name!r})"
+
+    def __eq__(self, value):
+        if not isinstance(value, Validator):
+            return NotImplemented
+        return (self.__class__ == value.__class__
+                and self.field_name == value.field_name)
+
+    @staticmethod
+    def is_positive(val):
+        try:
+            return float(val)>0
+        except(ValueError,TypeError):
+            return False
+
+    @classmethod
+    def get_validator_count(cls):
+        """Return number of validator created"""
+        return cls.validator_count
+
+
+class FilenameValidator(Validator):
+    def __init__(self):
+        super().__init__("filename")
+
+    def validate(self, data):
+        filename = data.get("filename", "").strip()
+            
+        if not filename or not filename.lower().endswith(".pdf"):
+            return "INVALID_FILENAME"
+        
+        return None
+
+class ModuleCodeValidator(Validator):
+    def __init__(self):
+        super().__init__("module_code")
+
+    def validate(self, data):
+        module_code = data.get("module_code","").strip()
+            
+        if not re.fullmatch(r"[A-Z]{2,4}-\d{3}",module_code):
+            return "INVALID_MODULE_CODE"
+
+        return None
+
+class PageCountValidator(Validator):
+    def __init__(self):
+        super().__init__("page_count")
+
+    def validate(self, data):
+        try:
+            page_count = int(data.get("page_count", ""))
+    
+            if page_count <= 0:
+                return "INVALID_PAGE_COUNT"
+        except (ValueError, TypeError):
+            return "INVALID_PAGE_COUNT"
+
+        return None
+
+class FileSizeValidator(Validator):
+    def __init__(self):
+        super().__init__("file_size_kb")
+
+    def validate(self, data):
+        try:
+            file_size = float(data.get("file_size_kb", ""))
+            if file_size <= 0:
+                return "INVALID_FILE_SIZE"
+        except (ValueError, TypeError):
+            return "INVALID_FILE_SIZE"
+
+        return None
+
+class BooleanFieldValidator(Validator):
+    def __init__(self, field_name):
+        super().__init__(field_name)
+
+    def validate(self, data):
+        val = str(data.get(self.field_name, "")).strip().lower()
+
+        if val not in ("true", "false"):
+            return "INVALID_"+ self.field_name.upper()
+
+        return None
+
+class StatusValidator(Validator):
+    def __init__(self, allowed_statuses):
+        super().__init__("status")
+
+        self.allowed_statuses = {status.lower() for status in allowed_statuses}
+
+    def validate(self, data):
+        status = str(data.get("status") or "").strip().lower()
+
+        if status not in self.allowed_statuses:
+            return "INVALID_STATUS"
+
+        return None
+        
+
+
+
+
+
+
+
+
 class MissingManifestError(Exception):
     pass
 class InvalidRowError(Exception):
@@ -20,6 +144,10 @@ class PdfModuleComplianceAuditor:
             allowed_statuses = {"draft","review","final"}
 
         self.allowed_statuses = { status.lower() for status in allowed_statuses}
+
+        self.validators = [FilenameValidator(),ModuleCodeValidator(),PageCountValidator(),
+                           FileSizeValidator(),BooleanFieldValidator("has_toc"),
+                           BooleanFieldValidator("has_images"), StatusValidator(self.allowed_statuses)]
 
         
     def read_file(self, file_path):
@@ -57,55 +185,13 @@ class PdfModuleComplianceAuditor:
         
     def validate_data(self, data):
         issues = []
-        
-    # validating filename 
-        filename = data.get("filename", "").strip()
-    
-        if not filename or not filename.lower().endswith(".pdf"):
-            issues.append("INVALID_FILENAME")
-    
-    # validating module code 
-        module_code = data.get("module_code","").strip()
-    
-        if not re.fullmatch(r"[A-Z]{2,4}-\d{3}",module_code):
-            issues.append("INVALID_MODULE_CODE")    
-    
-    # validating page count 
-        try:
-            page_count = int(data.get("page_count", ""))
-    
-            if page_count <= 0:
-                issues.append("INVALID_PAGE_COUNT")
-        except (ValueError, TypeError):
-            issues.append("INVALID_PAGE_COUNT")
-    
-    # validating file size 
-        try:
-            file_size = float(data.get("file_size_kb", ""))
-            if file_size <= 0:
-                issues.append("INVALID_FILE_SIZE")
-        except (ValueError, TypeError):
-            issues.append("INVALID_FILE_SIZE")
-    
-    # validating boolean strings 
-    
-        fields = ["has_toc", "has_images"]
-    
-        for field in fields:
-            value = str(data.get(field, ""))
-            value = value.strip().lower()
-        
-            if value != "true" and value != "false":
-                issue_code = "INVALID_" + field.upper()
-                issues.append(issue_code)
-    
-    # validating status 
-    
-        status = data.get("status", "")
-    
-        if status not in self.allowed_statuses:
-            issues.append("INVALID_STATUS")
-    
+
+        for validator in self.validators:
+            issue = validator.validate(data)
+
+            if issue is not None:
+                issues.append(issue)
+
         return issues
 
     
@@ -164,6 +250,8 @@ class PdfModuleComplianceAuditor:
             "summary_by_module": summary_by_module
         }
         return report
+
+
 
 
 if __name__ == "__main__":
