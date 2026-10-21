@@ -24,6 +24,8 @@ def read_file(file_path):
             # return list(reader)
 
             for row in reader:
+                if None in row or any(value is None for value in row.values()):
+                    raise InvalidRowError(f"Malformed csv row found in {file_path}")
                 yield row
 
     elif file_path.suffix.lower()==".json":
