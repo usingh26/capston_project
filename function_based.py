@@ -17,6 +17,7 @@ class InvalidRowError(Exception):
 
 # reading csv/json file 
 def read_file(file_path):
+    """Read csv or json and yeild the records"""
     if file_path.suffix.lower() == ".csv":
         with open(file_path, "r", newline="", encoding="utf-8") as file:
             reader = csv.DictReader(file)
@@ -41,6 +42,7 @@ def read_file(file_path):
 
 # closure for status validation
 def make_satus_validator(allowed_statuses):
+    """Status validator to validate statuses"""
     allowed_statuses = { status.lower() for status in allowed_statuses}
 
     def is_valid_status(status):
@@ -52,6 +54,7 @@ status_validator = make_satus_validator({"draft","review","final"})
 
 # validator function 
 def validate_data(data):
+    """Valiate manifest data and returns the issue """
     issues = []
 
 # validating filename 
@@ -107,6 +110,7 @@ def validate_data(data):
 
 # using decorator for logging and monitoring
 def log_and_time(function):
+    """This will calculate the time taking by a wrapper function"""
     def wrapper(*args, **kwargs):
         print(f"Starting {function.__name__}")
 
@@ -189,6 +193,7 @@ def create_report(lines):
 
 # main
 if __name__=="__main__":
+    """Running the auditor and save the compliance report"""
     current_folder = Path(__file__).resolve().parent
     
     root_folder = current_folder.parent

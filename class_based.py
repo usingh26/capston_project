@@ -9,7 +9,7 @@ class Validator:
     """Base class for all validators"""
     validator_count = 0
 
-    def __init__(self, field_name):
+    def __init__(self, field_name: str)-> None:
         self.field_name = field_name
         Validator.validator_count += 1
 
@@ -17,27 +17,27 @@ class Validator:
         """validator must implement this method"""
         raise NotImplementedError("Every validator must implement validate()")
 
-    def __str__(self):
+    def __str__(self)-> str:
         return f"{self.__class__.__name__}"
 
-    def __repr__(self):
+    def __repr__(self)-> str:
         return f"{self.__class__.__name__}({self.field_name!r})"
 
-    def __eq__(self, value):
+    def __eq__(self, value:object)-> bool:
         if not isinstance(value, Validator):
             return NotImplemented
         return (self.__class__ == value.__class__
                 and self.field_name == value.field_name)
 
     @staticmethod
-    def is_positive(val):
+    def is_positive(val: object)-> bool:
         try:
             return float(val)>0
         except(ValueError,TypeError):
             return False
 
     @classmethod
-    def get_validator_count(cls):
+    def get_validator_count(cls)-> int:
         """Return number of validator created"""
         return cls.validator_count
 
